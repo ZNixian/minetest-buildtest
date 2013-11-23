@@ -107,6 +107,14 @@ minetest.register_entity("buildtest:entity_flat", {
 				
 				if strs:starts(posname, "buildtest:pipe_diamond_") then
 					newDir = buildtest.pipes.types.diamond.getDir(self.nextpos, self.content)
+					if newDir==nil then
+						for i=1,6 do
+							local tmpPos=buildtest.posADD(pos,buildtest.toXY(i))
+							if strs:starts(minetest.get_node(tmpPos).name, "buildtest:pipe_gold")==true then
+								newDir = buildtest.toXY(i)
+							end
+						end
+					end
 				end
 				
 				if strs:starts(posname, "buildtest:pipe_stripe_") then
