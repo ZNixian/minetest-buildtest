@@ -1,5 +1,5 @@
-buildtest.pumps.register_pump("buildtest:pump_mesecon", "default_wood.png", {
-	description = "Buildtest Mesecon Pump",
+buildtest.pumps.register_pump("buildtest:engine_mesecon", "default_wood.png", {
+	description = "Buildtest Mesecon Engine",
 },
 {
 	abm = function(pos)

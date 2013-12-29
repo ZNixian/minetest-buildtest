@@ -192,20 +192,25 @@ minetest.register_entity("buildtest:entity_flat", {
 			{x= 0,y=-1,z= 0},
 			{x= 0,y= 1,z= 0},
 		}
+		local ok_poses = {}
 		local prohib={self.invertpos(self.direction)}
 		for i=1,#prohib do
 			for j=1,#poses do
 				if minetest.pos_to_string(poses[j])==minetest.pos_to_string(prohib[i]) then
 					poses[j]=0
-				elseif buildtest.pipeConn(self.addpos(self.nextpos,poses[j]),self.nextpos)==false then  --  minetest.get_node(self.addpos(self.nextpos,poses[j]))
+				elseif buildtest.pipeConn(vector.add(self.nextpos,poses[j]),self.nextpos)==false then  --  minetest.get_node(self.addpos(self.nextpos,poses[j]))
 					poses[j]=0
 				end
 			end
 		end
 		for i=1,#poses do
 			if poses[i]~=0 then
-				return poses[i]
+				--return poses[i]
+				ok_poses[#ok_poses + 1] = poses[i]
 			end
+		end
+		if #ok_poses > 0 then
+			return ok_poses[math.random(1, #ok_poses)]
 		end
 		return nil
 	end,

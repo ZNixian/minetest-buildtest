@@ -97,7 +97,7 @@ buildtest.pumps.types.stirling = {
 	end,
 }
 
-buildtest.pumps.register_pump("buildtest:pump_stirling", "default_cobble.png", {
+buildtest.pumps.register_pump("buildtest:engine_stirling", "default_cobble.png", {
 	description = "Buildtest Stirling Engine",
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)

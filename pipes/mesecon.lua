@@ -6,9 +6,9 @@ buildtest.pipes.types.mesecon = {
 local mesecons_rules={{x=0,y=0,z=1},{x=0,y=0,z=-1},{x=1,y=0,z=0},{x=-1,y=0,z=0},{x=0,y=1,z=0},{x=0,y=-1,z=0}}
 
 for state, invState in pairs({off="on", on="off"}) do
-	local top = "buildtest_pipe_mesecon.png^wires_"..state..".png"
-	buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
-		local side = "buildtest_pipe_mesecon.png"
+	buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, toverlay)
+		local side = "buildtest_pipe_mesecon.png"..toverlay
+		local top = "buildtest_pipe_mesecon.png^wires_"..state..".png"..toverlay
 		local def = {
 			sunlight_propagates = true,
 			paramtype = 'light',
@@ -30,6 +30,12 @@ for state, invState in pairs({off="on", on="off"}) do
 				connects={
 					--"default:chest",
 					buildtest.pipes.defaultPipes
+				},
+				pipe_groups = {
+					type = type,
+				},
+				vconnects={
+					buildtest.pipes.defaultVPipes
 				},
 			},
 			mesecons={

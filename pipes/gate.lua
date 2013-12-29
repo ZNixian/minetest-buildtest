@@ -79,7 +79,7 @@ if minetest.get_modpath("digilines") ~= nil then
 end
 
 for m_on = 1, 2 do
-	buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+	buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, toverlay)
 		local state = {"off", "on"}
 		local mesecon_state = mesecon.state[state[m_on]]
 		--print(m_on .. " = " .. mesecon_state)
@@ -96,7 +96,7 @@ for m_on = 1, 2 do
 			},
 			--------------------------
 			description = clas.."Buildtest Gate",
-			tiles = {"buildtest_pipe_gate_"..m_on..".png"},
+			tiles = {"buildtest_pipe_gate_"..m_on..".png"..toverlay},
 			groups = {choppy=1,oddly_breakable_by_hand=3},
 			buildtest = {
 				pipe=1,
@@ -104,6 +104,12 @@ for m_on = 1, 2 do
 				connects={
 					--"default:chest",
 					buildtest.pipes.defaultPipes
+				},
+				pipe_groups = {
+					type = type,
+				},
+				vconnects={
+					buildtest.pipes.defaultVPipes
 				},
 			},
 			drop = {

@@ -2,7 +2,8 @@ buildtest.pipes.types.wood = {
 	base = "default:wood",
 }
 
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, toverlay)
+	if type=="liquid" then return end
 	local def = {
 		sunlight_propagates = true,
 		paramtype = 'light',
@@ -16,7 +17,7 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 		},
 		--------------------------
 		description = clas.."Buildtest Wood Pipe",
-		tiles = {"buildtest_pipe_wood.png"},
+		tiles = {"buildtest_pipe_wood.png"..toverlay},
 		groups = {choppy=1,oddly_breakable_by_hand=3},
 		buildtest = {
 			pipe=1,
@@ -28,6 +29,12 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 			disconnects = {{	
 				"default:chest",
 			}},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
+			},
 		},
 		drop = {
 			max_items = 1,

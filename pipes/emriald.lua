@@ -1,4 +1,5 @@
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
+	if type=="liquid" then return end
 	local def = {
 		sunlight_propagates = true,
 		paramtype = 'light',
@@ -20,6 +21,12 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 			connects={
 				buildtest.pipes.defaultPipes,
 				{"default:chest"}
+			},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
 			},
 		},
 		drop = {

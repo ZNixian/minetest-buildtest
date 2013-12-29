@@ -34,7 +34,7 @@ buildtest.pumps.types.combustion = {
 		local meta = minetest.get_meta(pos)
 		local def = minetest.registered_items[minetest.get_node(pos).name]
 		----------------------------------------------------
-		if minetest.get_node(pos).name=="buildtest:pump_combustion_yellow" then
+		if minetest.get_node(pos).name=="buildtest:engine_combustion_yellow" then
 			--print(meta:get_int("water"))
 			if meta:get_int("water") > 1 then
 				meta:set_int("water", meta:get_int("water") - 2)
@@ -42,7 +42,7 @@ buildtest.pumps.types.combustion = {
 				return false
 			end
 		end
-		if minetest.get_node(pos).name=="buildtest:pump_combustion_red" then
+		if minetest.get_node(pos).name=="buildtest:engine_combustion_red" then
 			if meta:get_int("water") > 20 then
 				meta:set_int("water", meta:get_int("water") - 20)
 				buildtest.pumps.hacky_swap_node(pos, def.buildtest.pump.prev)
@@ -78,7 +78,7 @@ buildtest.pumps.types.combustion = {
 	end,
 }
 
-buildtest.pumps.register_pump("buildtest:pump_combustion", "default_steel_block.png", {
+buildtest.pumps.register_pump("buildtest:engine_combustion", "default_steel_block.png", {
 	description = "Buildtest Combustion Engine",
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
@@ -160,7 +160,7 @@ buildtest.pumps.register_pump("buildtest:pump_combustion", "default_steel_block.
 	
 	canHeat = function(pos)
 		local meta = minetest.get_meta(pos)
-		if minetest.get_node(pos).name=="buildtest:pump_combustion_yellow" then
+		if minetest.get_node(pos).name=="buildtest:engine_combustion_yellow" then
 			if meta:get_int("water") > 20 then
 				return false
 			end

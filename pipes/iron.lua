@@ -2,9 +2,9 @@ buildtest.pipes.types.iron = {
 	base = "default:steel_ingot",
 }
 
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
-	local top = "buildtest_pipe_iron_top.png"
-	local side = "buildtest_pipe_iron.png"
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, toverlay)
+	local top = "buildtest_pipe_iron_top.png"..toverlay
+	local side = "buildtest_pipe_iron.png"..toverlay
 	local def = {
 		sunlight_propagates = true,
 		paramtype = 'light',
@@ -27,33 +27,39 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 			connects={
 				buildtest.pipes.defaultPipes
 			},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
+			},
 		},
 		mesecons = {
 			effector = {
 				action_off = function (pos, node)
 				end,
 				action_on = function (pos, node)
-					--minetest.after(0.5, function() -- mesecons seems to call "action_on" BEFORE it sets all the wires to new nodes. -- WRONG!
-					for i=0, 5 do
-						local newPos = buildtest.posADD(pos, buildtest.pipes.types.iron.getRawDir(i*4))
-						--if mesecon:is_power_on(newPos) then
---						local rule = {x=newPos.x, y=newPos.y, z=newPos.z, name = "in"..i}
---						local invRule = {x=rule.x, y=rule.y, z=rule.z, name = rule.name}
---						if mesecon:is_power_on(mesecon:addPosRule(pos, rule), invRule)
---										and mesecon:rules_link(mesecon:addPosRule(pos, rule), pos) then
---						local def = minetest.registered_items[minetest.get_node(newPos).name]
---						if	def~=nil and
---							def.mesecons~=nil and
---							def.mesecons.receptor~=nil and
---							def.mesecons.receptor.state=="on" then
-						if strs:starts(minetest.get_node(newPos).name, "buildtest:pipe_meseconon_") then
-							
-							node.param2 = i * 4
-							minetest.set_node(pos, node)
---								print("setting facedir to: "..node.param2)
-						end
-					end
-					--end)
+--					--minetest.after(0.5, function() -- mesecons seems to call "action_on" BEFORE it sets all the wires to new nodes. -- WRONG!
+--					for i=0, 5 do
+--						local newPos = buildtest.posADD(pos, buildtest.pipes.types.iron.getRawDir(i*4))
+--						--if mesecon:is_power_on(newPos) then
+----						local rule = {x=newPos.x, y=newPos.y, z=newPos.z, name = "in"..i}
+----						local invRule = {x=rule.x, y=rule.y, z=rule.z, name = rule.name}
+----						if mesecon:is_power_on(mesecon:addPosRule(pos, rule), invRule)
+----										and mesecon:rules_link(mesecon:addPosRule(pos, rule), pos) then
+----						local def = minetest.registered_items[minetest.get_node(newPos).name]
+----						if	def~=nil and
+----							def.mesecons~=nil and
+----							def.mesecons.receptor~=nil and
+----							def.mesecons.receptor.state=="on" then
+--						if strs:starts(minetest.get_node(newPos).name, "buildtest:pipe_meseconon_") then
+--							
+--							node.param2 = i * 4
+--							minetest.set_node(pos, node)
+----								print("setting facedir to: "..node.param2)
+--						end
+--					end
+--					--end)
 				end,
 			},
 		},

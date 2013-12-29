@@ -16,7 +16,8 @@ buildtest.pipes.types.diamond = {
 --	z+ :	black
 --	z- :	white
 
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
+	if type=="liquid" then return end
 	local top = "buildtest_pipe_diamond_top.png"
 	local bttm = "buildtest_pipe_diamond_bottem.png"
 	local side = "buildtest_pipe_diamond.png"
@@ -40,6 +41,12 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 			pipe=1,
 			connects={
 				buildtest.pipes.defaultPipes
+			},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
 			},
 		},
 		drop = {

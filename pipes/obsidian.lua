@@ -2,7 +2,8 @@ buildtest.pipes.types.obsidian = {
 	base = "default:obsidian",
 }
 
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
+	if type=="liquid" then return end
 	local def = {
 		sunlight_propagates = true,
 		paramtype = 'light',
@@ -23,6 +24,12 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 			pipe=1,
 			connects={
 				buildtest.pipes.defaultPipes
+			},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
 			},
 		},
 		drop = {

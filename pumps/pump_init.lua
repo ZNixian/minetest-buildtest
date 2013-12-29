@@ -42,7 +42,7 @@ buildtest.pumps = {
 	findpipe = function(pos)
 		for i=1,6 do
 			local tmpPos=buildtest.posADD(pos,buildtest.toXY(i))
-			if buildtest.pipeAt(tmpPos)==true then
+			if buildtest.pipeAt(tmpPos)==true or buildtest.pumps.isPumpable(tmpPos)==true then
 				return tmpPos
 			end
 		end
@@ -57,28 +57,121 @@ buildtest.pumps = {
 		end
 		return {x=pos.x,y=pos.y+1,z=pos.z}
 	end,
+	isPumpable = function(pos)
+		local def=minetest.registered_items[minetest.get_node(pos).name]
+		if def==nil then return false end
+		if def.buildtest==nil then return false end
+		if def.buildtest.power==nil then return false end
+		return true
+	end,
 }
+
+buildtest.pumps.send_power = function(pipepos, speed, movecount)
+	local chestpos = buildtest.pumps.findchest(pipepos) --{x=pipepos.x,y=pipepos.y+1,z=pipepos.z}
+	if buildtest.pumps.pulls[minetest.get_node(chestpos).name]~=nil and (strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_wood_")
+					or strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_emr_")) then  --  was minetest.get_node(chestpos).name=="default:chest"
+		local inv = minetest.get_meta(chestpos):get_inventory()
+		local tosend = nil
+		local pipeinv = minetest.get_meta(pipepos):get_inventory()
+		local listname = buildtest.pumps.pulls[minetest.get_node(chestpos).name][1]
+		---------------------------------
+		for i=1, inv:get_size(listname) do
+			local cell = inv:get_stack(listname, i):to_table()
+			if tosend==nil and cell~=nil and inv:get_stack(listname, i):is_empty()==false then
+				if strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_wood_") or pipeinv:contains_item("main", {name = cell.name}) then
+					local move = math.min(cell.count,
+							movecount)
+					
+					tosend=ItemStack(cell):to_table()
+					tosend.count = move
+					cell.count = cell.count - move
+					inv:set_stack(listname, i, cell)
+				end
+			end
+		end
+		if tosend==nil then return end
+		local entity = buildtest.makeEnt(pipepos, tosend, speed, chestpos)
+--		if entity then
+--			entity:setpos(chestpos)
+--			entity:setvelocity({x=0, y=0-speed, z=0})
+--		end
+	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_obsidian_") then
+		for _,object in ipairs(minetest.get_objects_inside_radius(pos, speed*movecount)) do
+			if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
+				if object:get_luaentity().itemstring ~= "" then
+----				local titem=tube_item(pos,object:get_luaentity().itemstring)
+----				titem:get_luaentity().start_pos = {x=pos.x,y=pos.y-1,z=pos.z}
+----				titem:setvelocity({x=0.01,y=1,z=-0.01})
+----				titem:setacceleration({x=0, y=0, z=0})
+					buildtest.makeEnt(pipepos, ItemStack(object:get_luaentity().itemstring):to_table(), speed, pipepos)
+				end
+				--object:setvelocity
+				object:get_luaentity().itemstring = ""
+				object:remove()
+			end
+		end
+	elseif minetest.get_node(pipepos).name=="buildtest:pump" then
+		local topos  = buildtest.pumps.findpipe(pipepos)
+		buildtest.makeEnt(topos, {name="default:water_source"}, speed, pipepos)
+		local pumppipepos = {x=pipepos.x, y=pipepos.y-1, z=pipepos.z}
+		if minetest.get_node(pumppipepos).name=="air" then
+			minetest.set_node(pumppipepos, {name="buildtest:pump_pipe_act"})
+		end
+	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_stripe_") then
+		local itemName = minetest.get_node(chestpos).name
+		if itemName~="air" and itemName~="ignore" then
+--			print("currently cutting: "..itemName)
+			local drops = minetest.get_node_drops(itemName, "default:pick_mese")--minetest.registered_nodes[itemName].drop
+			
+			for _,item in ipairs(drops) do
+				local count, name
+				if type(item) == "string" then
+					count = 1
+					name = item
+				else
+					count = item:get_count()
+					name = item:get_name()
+				end
+				
+				local entity = buildtest.makeEnt(pipepos, {name = name, count = count}, speed, pipepos)
+				if entity then
+					entity:setpos(chestpos)
+					entity:setvelocity({x=0, y=0-speed, z=0})
+				end
+			end
+			
+			minetest.set_node(chestpos, {name = "air"})
+			nodeupdate(chestpos)
+		end
+	else
+		--speedup = speed
+	end
+end
+
+buildtest.pumps.send_power_from = function(pos, power)
+end
 
 buildtest.pumps.register_pump = function(name, textureBase, flags, def)
 	local abm = def.abm
 	for typeId, typeName in pairs(buildtest.pumps.colours) do
 		local sideTexture = textureBase.."^buildtest_pump_mask_"..typeName.."_side.png"
 		local def = {
-			tiles = {textureBase, textureBase, sideTexture, sideTexture, sideTexture, sideTexture},
+			tiles = {sideTexture, sideTexture.."^[transformR180", sideTexture.."^[transformR270", sideTexture.."^[transformR90",
+								textureBase, textureBase},
 			groups = {choppy=1,oddly_breakable_by_hand=3},
 			paramtype = "light",
 			paramtype2 = "facedir",
 			sunlight_propagates = true,
 			buildtest = {
-				pipe=1,
+				slowdown=0.1,
 				connects={
---					"buildtest:pipe_wood",
 				},
+				disconnects = {},
 				pump = {
 --					maxSpeed = 0.5,
 --					moveCount = 1,
 --					maxLevel = 5,
-					upTime = 10,
+					upTime = 60,
 					next = name.."_"..(buildtest.pumps.colours[typeId + 1] or typeName),
 					prev = name.."_"..(buildtest.pumps.colours[typeId - 1] or typeName),
 					colour = typeName,
@@ -98,16 +191,21 @@ buildtest.pumps.register_pump = function(name, textureBase, flags, def)
 --					}
 				}
 			},
-			on_construct = function(pos)
-				buildtest.pumps.on_construct(pos)
+--			on_construct = function(pos)
+--				buildtest.pumps.on_construct(pos)
+--			end,
+			on_place = function(itemstack, placer, pointed_thing)
+				local stack = minetest.item_place(itemstack, placer, pointed_thing)
+				buildtest.pumps.on_construct(pointed_thing.above)
+				return stack
 			end,
 			drawtype = "nodebox",
 			node_box = {
 				type = "fixed",
 				fixed = {
 					--{0,0,0,0,0,0},
-					{-5/16, -5/16, -5/16, 5/16, 8/16, 5/16},
-					{-8/16, -8/16, -8/16, 8/16, -5/16, 8/16},
+					{-5/16, -5/16, -5/16, 5/16, 5/16, 8/16},
+					{-8/16, -8/16, -8/16, 8/16, 8/16, -5/16},
 				}
 			},
 			drop = {
@@ -156,6 +254,7 @@ buildtest.pumps.register_pump = function(name, textureBase, flags, def)
 end
 
 buildtest.pumps.send = function(pos)
+	local node = minetest.get_node(pos)
 --	print("ok")
 --	local facedir = minetest.get_node(pos).param2
 --	facedir = buildtest.facedir_to_dir(facedir)
@@ -165,8 +264,7 @@ buildtest.pumps.send = function(pos)
 --		return
 --	end
 --	chestpos = chestpos[0]
-	local pipepos  = buildtest.pumps.findpipe(pos)  --{x=pos.x,y=pos.y+1,z=pos.z}
-	local chestpos = buildtest.pumps.findchest(pipepos) --{x=pipepos.x,y=pipepos.y+1,z=pipepos.z}
+	local pipepos = vector.add(pos, minetest.facedir_to_dir(node.param2))--buildtest.pumps.findpipe(pos)  --{x=pos.x,y=pos.y+1,z=pos.z}
 	local speedup = 0
 	local thisMeta = minetest.get_meta(pos)
 	
@@ -175,7 +273,7 @@ buildtest.pumps.send = function(pos)
 		return
 	end
 	
-	local def = minetest.registered_items[minetest.get_node(pos).name]
+	local def = minetest.registered_items[node.name]
 	if def.buildtest.pump~=nil then
 		
 		if def.buildtest.pump.runConf~=nil then
@@ -251,81 +349,9 @@ buildtest.pumps.send = function(pos)
 		return
 	end
 	
-	if buildtest.pumps.pulls[minetest.get_node(chestpos).name]~=nil and (strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_wood_") or strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_emr_")) then  --  was minetest.get_node(chestpos).name=="default:chest"
-		local inv = minetest.get_meta(chestpos):get_inventory()
-		local tosend = nil
-		local pipeinv = minetest.get_meta(pipepos):get_inventory()
-		local listname = buildtest.pumps.pulls[minetest.get_node(chestpos).name][1]
-		---------------------------------
-		for i=1, inv:get_size(listname) do
-			local cell = inv:get_stack(listname, i):to_table()
-			if tosend==nil and cell~=nil and inv:get_stack(listname, i):is_empty()==false then
-				if strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_wood_") or pipeinv:contains_item("main", {name = cell.name}) then
-					local move = math.min(cell.count,
-							def.buildtest.pump.moveCount)
-					
-					tosend=ItemStack(cell):to_table()
-					tosend.count = move
-					cell.count = cell.count - move
-					inv:set_stack(listname, i, cell)
-				end
-			end
-		end
-		if tosend==nil then return end
-		local entity = buildtest.makeEnt(pipepos, tosend, speed)
-		if entity then
-			entity:setpos(chestpos)
-			entity:setvelocity({x=0, y=0-speed, z=0})
-		end
-	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_obsidian_") then
-		for _,object in ipairs(minetest.get_objects_inside_radius(pos, speed*def.buildtest.pump.moveCount)) do
-			if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
-				if object:get_luaentity().itemstring ~= "" then
-----				local titem=tube_item(pos,object:get_luaentity().itemstring)
-----				titem:get_luaentity().start_pos = {x=pos.x,y=pos.y-1,z=pos.z}
-----				titem:setvelocity({x=0.01,y=1,z=-0.01})
-----				titem:setacceleration({x=0, y=0, z=0})
-					buildtest.makeEnt(pipepos, ItemStack(object:get_luaentity().itemstring):to_table(), speed)
-				end
-				--object:setvelocity
-				object:get_luaentity().itemstring = ""
-				object:remove()
-			end
-		end
-	elseif minetest.get_node(pipepos).name=="buildtest:pump" then
-		local ent=minetest.add_entity(pipepos, "buildtest:entity_liquid")
-		ent:get_luaentity().pos = pipepos
-	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_stripe_") then
-		local itemName = minetest.get_node(chestpos).name
-		if itemName~="air" and itemName~="ignore" then
---			print("currently cutting: "..itemName)
-			local drops = minetest.get_node_drops(itemName, "default:pick_mese")--minetest.registered_nodes[itemName].drop
-			
-			for _,item in ipairs(drops) do
-				local count, name
-				if type(item) == "string" then
-					count = 1
-					name = item
-				else
-					count = item:get_count()
-					name = item:get_name()
-				end
-				
-				local entity = buildtest.makeEnt(pipepos, {name = name, count = count}, speed)
-				if entity then
-					entity:setpos(chestpos)
-					entity:setvelocity({x=0, y=0-speed, z=0})
-				end
-			end
-			
-			minetest.set_node(chestpos, {name = "air"})
-			nodeupdate(chestpos)
-		end
-	else
-		speedup = speed
-	end
+	buildtest.pumps.send_power(pipepos, speed, def.buildtest.pump.moveCount)
 	
-	thisMeta:set_int("speedup", speedup)
+	--thisMeta:set_int("speedup", speedup)
 end
 
 buildtest.facedir_to_dir = function(param)
@@ -338,14 +364,15 @@ buildtest.facedir_to_dir = function(param)
 	return list[param+1]
 end
 
-buildtest.makeEnt = function(pos, tosend, speed)
+buildtest.makeEnt = function(pos, tosend, speed, from)
+	if from==nil then from=pos end
 	if speed < 1 then speed = 1 end
 	local entity=minetest.add_entity(pos, "buildtest:entity_flat")
 	if entity then
 		entity:get_luaentity().nextpos = pos
 		entity:get_luaentity().speed = speed
-		entity:setpos(pos)
-		entity:setvelocity({x=0, y=0, z=0})
+		entity:setpos(from)
+		entity:setvelocity(vector.subtract(pos, from))
 		entity:get_luaentity():set_item(tosend)
 		--entity:get_luaentity().inInit = false
 	end
@@ -354,21 +381,30 @@ end
 
 buildtest.pumps.on_construct = function(pos, texture, speed)
 	--print("ok")
-	local ent = minetest.add_entity(pos, "buildtest:pump_ent")
-	if ent then
-		local luaent = ent:get_luaentity()
-		ent:setpos(pos)
-		--ent:get_luaentity():setTexture(texture)
-		--ent:get_luaentity():setAnim(speed)
-		ent:get_luaentity().config = {
-			texture = texture,
-			speed = speed,
-		}
-		ent:get_luaentity().homepos = pos
---		ent:get_luaentity().handmade = true
-		--ent:get_luaentity().setTexture(ent, "buildtest_pump_mesecon.png")
---		ent:get_luaentity().homename = minetest.get_node(pos).name
---		ent:get_luaentity().reset = true
+--	local ent = minetest.add_entity(pos, "buildtest:pump_ent")
+--	if ent then
+--		local luaent = ent:get_luaentity()
+--		ent:setpos(pos)
+--		--ent:get_luaentity():setTexture(texture)
+--		--ent:get_luaentity():setAnim(speed)
+--		ent:get_luaentity().config = {
+--			texture = texture,
+--			speed = speed,
+--		}
+--		ent:get_luaentity().homepos = pos
+----		ent:get_luaentity().handmade = true
+--		--ent:get_luaentity().setTexture(ent, "buildtest_pump_mesecon.png")
+----		ent:get_luaentity().homename = minetest.get_node(pos).name
+----		ent:get_luaentity().reset = true
+--	end
+	
+	local ppos = vector.subtract(buildtest.pumps.findpipe(pos), pos)
+	local facedir = minetest.dir_to_facedir(ppos, true)
+	local node = minetest.get_node(pos)
+	
+	if facedir~=node.param2 then
+		node.param2 = facedir
+		minetest.set_node(pos, node)
 	end
 end
 

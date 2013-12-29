@@ -3,7 +3,7 @@ buildtest.pipes.shapes={}
 buildtest.pipes.types = {}
 buildtest.pipes.makepipe = function(go)
 	local count=0
-	for wp=0, 0 do -- was for wp=0, 1 do
+	for wp=0, 1 do -- was for wp=0, 0 do
 		for f=0,1 do
 			for e=0,1 do
 				for d=0,1 do
@@ -42,11 +42,15 @@ buildtest.pipes.makepipe = function(go)
 								end
 								-----------------------------------------
 								local clas=""
+								local type = "transp"
+								local toverlay = ""
 								if wp==1 then
+									type = "liquid"
 									clas="Waterproof "..clas
+									toverlay = toverlay .. "^buildtest_waterproof.png"
 								end
 								-----------------------------------------
-								go(set, nodes, count, a..b..c..d..e..f.."_"..wp, wp, clas)
+								go(set, nodes, count, a..b..c..d..e..f.."_"..wp, wp, clas, type, toverlay)
 							end
 						end
 					end
@@ -94,7 +98,7 @@ buildtest.pipes.processNode=function(pos)
 	
 	local j={}
 	for i=1,6 do
-		j[i]=buildtest.pipeConn(buildtest.posADD(pos,buildtest.toXY(i)), pos)
+		j[i]=buildtest.pipeConn(buildtest.posADD(pos,buildtest.toXY(i)), pos, true)
 	end
 	
 	local node = minetest.get_node(pos)
@@ -157,7 +161,10 @@ buildtest.pipeAt = function(pos)
 	return buildtest.pipeConn(pos, nil)
 end
 
-buildtest.pipeConn = function(pos, refpos)
+buildtest.pipeConn = function(pos, refpos, visual)
+	if not visual then visual=false end
+	local firstName = minetest.get_node(pos).name
+	local firstDef = minetest.registered_items[firstName]
 	if refpos~=nil then
 		local def=minetest.registered_items[minetest.get_node(refpos).name]
 		if def==nil then return false end
@@ -167,23 +174,48 @@ buildtest.pipeConn = function(pos, refpos)
 		--if strs:inarray(minetest.get_node(pos).name,def.buildtest.connects)==false then return false end
 		if def.buildtest.disconnects~=nil then
 			for i=1,#def.buildtest.disconnects do
-				if buildtest.pipes.pipeInArray(minetest.get_node(pos).name, def.buildtest.disconnects[i])==true then return false end
+				if buildtest.pipes.pipeInArray(firstName, def.buildtest.disconnects[i])==true then return false end
 			end
 		end
 		
+		local conn=2
 		for i=1,#def.buildtest.connects do
-			if buildtest.pipes.pipeInArray(minetest.get_node(pos).name, def.buildtest.connects[i])==true then break end
-			if i==#def.buildtest.connects then return false end
+			if buildtest.pipes.pipeInArray(firstName, def.buildtest.connects[i])==true then break end
+			if i==#def.buildtest.connects then conn=conn-1 end
+		end
+		
+		
+		if visual==true then
+			for i=1,#def.buildtest.vconnects do
+				if buildtest.pipes.pipeInArray(firstName, def.buildtest.vconnects[i])==true then break end
+				if i==#def.buildtest.vconnects then conn=conn-1 end
+			end
+		else
+			conn=conn-1
+		end
+		
+		if conn==0 then
+			return false
+		end
+		
+		
+		if firstDef~=nil then
+			if firstDef.buildtest~=nil then
+				if def.buildtest.pipe_groups~=nil and firstDef.buildtest.pipe_groups~=nil then
+					if def.buildtest.pipe_groups.type~=firstDef.buildtest.pipe_groups.type then
+						return false
+					end
+				end
+			end
 		end
 	else
 --		if strs:starts(minetest.get_node(pos).name,"buildtest:pipe_")==false then
 --			--print("hv eletro : ok")
 --			return false
 --		end
-		local def = minetest.registered_items[minetest.get_node(pos).name]
-		if def==nil then return false end
-		if def.buildtest==nil then return false end
-		if def.buildtest.pipe~=1 then return false end
+		if firstDef==nil then return false end
+		if firstDef.buildtest==nil then return false end
+		if firstDef.buildtest.pipe~=1 then return false end
 	end
 	return true
 end
@@ -215,6 +247,10 @@ buildtest.arrToStr=function(t,tok)
 	end
 	return str
 end
+
+buildtest.pipes.defaultVPipes = {
+	"buildtest:pump",
+}
 
 buildtest.pipes.defaultPipes = {
 	-----------  ITEST  -------------

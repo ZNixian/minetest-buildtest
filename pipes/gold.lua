@@ -2,7 +2,7 @@ buildtest.pipes.types.gold = {
 	base = "default:gold_ingot",
 }
 
-buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
+buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, toverlay)
 	local def = {
 		sunlight_propagates = true,
 		paramtype = 'light',
@@ -16,13 +16,19 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas)
 		},
 		--------------------------
 		description = clas.."Buildtest Gold Pipe",
-		tiles = {"buildtest_pipe_gold.png"},
+		tiles = {"buildtest_pipe_gold.png"..toverlay},
 		groups = {choppy=1,oddly_breakable_by_hand=3},
 		buildtest = {
 			slowdown=0.1,
 			pipe=1,
 			connects={
 				buildtest.pipes.defaultPipes
+			},
+			pipe_groups = {
+				type = type,
+			},
+			vconnects={
+				buildtest.pipes.defaultVPipes
 			},
 		},
 		drop = {
