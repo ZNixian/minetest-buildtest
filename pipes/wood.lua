@@ -26,8 +26,23 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, tover
 				--"default:chest",
 				buildtest.pipes.defaultPipes
 			},
-			disconnects = {{	
-				"default:chest",
+			disconnects = {{
+	"itest:macerator",
+	"itest:macerator_active",
+	"itest:iron_furnace_active",
+	"itest:iron_furnace",
+	"itest:electric_furnace_active",
+	"itest:electric_furnace",
+	"itest:extractor_active",
+	"itest:extractor",
+	"itest:generator_active",
+	"itest:generator",
+	-----------  ITEST  -------------
+	--"buildtest:pump_stirling",
+	"default:furnace_active",
+	"buildtest:autocraft",
+	"default:furnace",
+	"default:chest",
 			}},
 			pipe_groups = {
 				type = type,
