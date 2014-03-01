@@ -12,7 +12,7 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
 			fixed = nodes
 		},
 		--------------------------
-		description = clas.."Buildtest Emeriald Pipe",
+		description = clas.."Buildtest Emerald Pipe",
 		tiles = {"buildtest_pipe_emr.png"},
 		groups = {choppy=1,oddly_breakable_by_hand=3},
 		buildtest = {

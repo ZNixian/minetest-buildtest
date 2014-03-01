@@ -117,6 +117,18 @@ minetest.register_entity("buildtest:entity_flat", {
 					end
 				end
 				
+				if strs:starts(posname, "buildtest:pipe_diamese_") then
+					newDir = buildtest.pipes.types.diamond.getDir(self.nextpos, self.code)
+					if newDir==nil then
+						for i=1,6 do
+							local tmpPos=buildtest.posADD(pos,buildtest.toXY(i))
+							if strs:starts(minetest.get_node(tmpPos).name, "buildtest:pipe_gold")==true then
+								newDir = buildtest.toXY(i)
+							end
+						end
+					end
+				end
+				
 				if strs:starts(posname, "buildtest:pipe_stripe_") then
 					local targetPos = self.addpos(self.object:getpos(), self.olddir)
 					if minetest.get_node(targetPos).name == "air"
@@ -126,6 +138,12 @@ minetest.register_entity("buildtest:entity_flat", {
 						nodeupdate(targetPos)
 						return
 					end
+				end
+				
+				if strs:starts(posname, "buildtest:pipe_mese_") then
+					local meta = minetest.get_meta(self.nextpos)
+					local inv = meta:get_inventory()
+					self.code = inv:get_stack("main", 1):to_table()
 				end
 				
 				if strs:starts(posname, "buildtest:pipe_gate") then
@@ -278,6 +296,7 @@ minetest.register_entity("buildtest:entity_flat", {
 			self.content,
 			self.speed,
 			self.direction,
+			self.code,
 		})
 	end,
 
@@ -302,4 +321,5 @@ minetest.register_entity("buildtest:entity_flat", {
 	content={name="default:dirt",count=0},
 	speed = 1,
 	direction = {x=0,y=0,z=0},
+	code = {},
 })

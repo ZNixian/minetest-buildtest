@@ -91,6 +91,7 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
 end)
 
 buildtest.pipes.types.diamond.getDir = function(pos,cargo)
+	if cargo==nil or cargo.name==nil then return nil end
 	local inv = minetest.get_meta(pos):get_inventory()
 	for i=1,#buildtest.pipes.types.diamond.colours do
 		local name = buildtest.pipes.types.diamond.colours[i]

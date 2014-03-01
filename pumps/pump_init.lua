@@ -74,6 +74,7 @@ buildtest.pumps.send_power = function(pipepos, speed, movecount)
 		local tosend = nil
 		local pipeinv = minetest.get_meta(pipepos):get_inventory()
 		local listname = buildtest.pumps.pulls[minetest.get_node(chestpos).name][1]
+		local numitems = 1
 		---------------------------------
 		for i=1, inv:get_size(listname) do
 			local cell = inv:get_stack(listname, i):to_table()
@@ -83,14 +84,21 @@ buildtest.pumps.send_power = function(pipepos, speed, movecount)
 							movecount)
 					
 					tosend=ItemStack(cell):to_table()
-					tosend.count = move
+					tosend.count = 1
+					numitems = move
 					cell.count = cell.count - move
 					inv:set_stack(listname, i, cell)
 				end
 			end
 		end
 		if tosend==nil then return end
-		local entity = buildtest.makeEnt(pipepos, tosend, speed, chestpos)
+		local tbetween = 0.5 * (#buildtest.pumps.colours + 1 - speed) / numitems
+		for i=1, numitems do
+			minetest.after(tbetween * i, function()
+				print(tbetween * i)
+				local entity = buildtest.makeEnt(pipepos, tosend, speed, chestpos)
+			end)
+		end
 --		if entity then
 --			entity:setpos(chestpos)
 --			entity:setvelocity({x=0, y=0-speed, z=0})
@@ -231,7 +239,14 @@ buildtest.pumps.register_pump = function(name, textureBase, flags, def)
 	--		}},
 		}
 		for name, val in pairs(flags) do
-			def[name] = val
+			if name~="groups" then
+				def[name] = val
+			end
+		end
+		if flags.groups~=nil then
+			for name, val in pairs(flags.groups) do
+				def.groups[name]=val
+			end
 		end
 		if typeId~=1 then
 			def.groups.not_in_creative_inventory=1
