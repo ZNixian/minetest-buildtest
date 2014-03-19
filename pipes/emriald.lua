@@ -18,6 +18,7 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
 		buildtest = {
 			slowdown=0.1,
 			pipe=1,
+			autoconnect=false,
 			connects={
 				buildtest.pipes.defaultPipes,
 				{"default:chest"}

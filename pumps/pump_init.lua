@@ -95,7 +95,6 @@ buildtest.pumps.send_power = function(pipepos, speed, movecount)
 		local tbetween = 0.5 * (#buildtest.pumps.colours + 1 - speed) / numitems
 		for i=1, numitems do
 			minetest.after(tbetween * i, function()
-				print(tbetween * i)
 				local entity = buildtest.makeEnt(pipepos, tosend, speed, chestpos)
 			end)
 		end

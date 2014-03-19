@@ -184,6 +184,10 @@ buildtest.pipeConn = function(pos, refpos, visual)
 			if i==#def.buildtest.connects then conn=conn-1 end
 		end
 		
+		if buildtest.canPumpInto[firstName]~=nil and def.buildtest.autoconnect~=false then
+			conn=conn+1
+		end
+		
 		
 		if visual==true then
 			for i=1,#def.buildtest.vconnects do

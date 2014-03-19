@@ -22,6 +22,7 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, tover
 		buildtest = {
 			pipe=1,
 			slowdown=0.1,
+			autoconnect=false,
 			connects={
 				--"default:chest",
 				buildtest.pipes.defaultPipes
