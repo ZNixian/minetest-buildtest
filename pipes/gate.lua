@@ -199,9 +199,9 @@ for m_on = 1, 2 do
 				mesecon.on_dignode(pos, node)
 			end,
 			
-			allow_metadata_inventory_put = buildtest.autocraft.allow_metadata_inventory_put(nil, true),
-			allow_metadata_inventory_take = buildtest.autocraft.allow_metadata_inventory_take(nil),
-			allow_metadata_inventory_move = buildtest.autocraft.allow_metadata_inventory_move(nil),
+			allow_metadata_inventory_put = buildtest.libs.allow_metadata_inventory_put(nil, true),
+			allow_metadata_inventory_take = buildtest.libs.allow_metadata_inventory_take(nil),
+			allow_metadata_inventory_move = buildtest.libs.allow_metadata_inventory_move(nil),
 		}
 		if count~=1 or m_on==2 then
 			def.groups.not_in_creative_inventory=1

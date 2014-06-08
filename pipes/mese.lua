@@ -53,9 +53,9 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type, tover
 		end,
 		on_dig = buildtest.pipes.ond_funct,
 		------------------------------------------------
-		allow_metadata_inventory_put = buildtest.autocraft.allow_metadata_inventory_put(nil),
-		allow_metadata_inventory_take = buildtest.autocraft.allow_metadata_inventory_take(nil),
-		allow_metadata_inventory_move = buildtest.autocraft.allow_metadata_inventory_move(nil, true),
+		allow_metadata_inventory_put = buildtest.libs.allow_metadata_inventory_put(nil),
+		allow_metadata_inventory_take = buildtest.libs.allow_metadata_inventory_take(nil),
+		allow_metadata_inventory_move = buildtest.libs.allow_metadata_inventory_move(nil, true),
 	}
 	if count~=1 then
 		def.groups.not_in_creative_inventory=1

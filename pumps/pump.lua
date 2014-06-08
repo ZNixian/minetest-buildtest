@@ -31,12 +31,31 @@ minetest.register_node("buildtest:pump", {
 	end
 })
 
-minetest.register_node("buildtest:pump_pipe_act", {
-	groups = {oddly_breakable_by_hand=3},
-})
+buildtest.pumps.pumpible["buildtest:pump"] = {
+	power = function(pos, speed)
+		local topos = buildtest.pumps.findpipe(pos)
+		local pumppipepos = {x=pos.x, y=pos.y-1, z=pos.z}
+		
+		local pipename = minetest.get_node(pumppipepos).name
+		
+		while pipename=="buildtest:pump_pipe" do
+			pumppipepos.y = pumppipepos.y - 1
+			pipename = minetest.get_node(pumppipepos).name
+		end
+		
+		local pipedef = minetest.registered_nodes[pipename]
+		if pipedef==nil then return end
+		if pipename=="air" or pipedef.liquidtype == "source" or pipedef.liquidtype == "flowing" then
+			minetest.set_node(pumppipepos, {name="buildtest:pump_pipe"})
+			if pipedef.liquidtype == "source" then
+				buildtest.makeEnt(topos, {name=pipename}, speed, pos)
+			end
+		end
+	end,
+}
 
-minetest.register_node("buildtest:pump_pipe_off", {
-	groups = {not_in_creative_inventory=1,oddly_breakable_by_hand=3},
+minetest.register_node("buildtest:pump_pipe", {
+	groups = {oddly_breakable_by_hand=3},
 })
 
 minetest.register_abm({

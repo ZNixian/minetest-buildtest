@@ -274,7 +274,9 @@ buildtest.pipes.defaultPipes = {
 	"buildtest:autocraft",
 	"default:furnace",
 	"default:chest",
-	-----------
+	----------- BT FACTORY
+	"buildtest:assembly_table",
+	----------- BT PIPES
 	"buildtest:pipe_meseconoff",
 	"buildtest:pipe_meseconon",
 	"buildtest:pipe_sandstone",

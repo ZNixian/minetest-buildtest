@@ -54,9 +54,9 @@ buildtest.pipes.makepipe(function(set, nodes, count, name, id, clas, type)
 			minetest.show_formspec(clicker:get_player_name(), "buildtest:pipe_emr_"..name, formspec)
 		end,
 		--------------------------------------------------------------------------------
-		allow_metadata_inventory_put = buildtest.autocraft.allow_metadata_inventory_put(nil),
-		allow_metadata_inventory_take = buildtest.autocraft.allow_metadata_inventory_take(nil),
-		allow_metadata_inventory_move = buildtest.autocraft.allow_metadata_inventory_move(nil),
+		allow_metadata_inventory_put = buildtest.libs.allow_metadata_inventory_put(nil),
+		allow_metadata_inventory_take = buildtest.libs.allow_metadata_inventory_take(nil),
+		allow_metadata_inventory_move = buildtest.libs.allow_metadata_inventory_move(nil),
 	}
 	if count~=1 then
 		def.groups.not_in_creative_inventory=1

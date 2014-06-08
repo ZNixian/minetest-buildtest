@@ -20,6 +20,8 @@ buildtest.pumps = {
 		["itest:extractor_active"] = {"dst"},
 		["itest:extractor"] = {"dst"},
 	},
+	pumpible = {
+	},
 	hacky_swap_node = function(pos, name)
 		local node = minetest.get_node(pos)
 		local meta = minetest.get_meta(pos)
@@ -117,13 +119,8 @@ buildtest.pumps.send_power = function(pipepos, speed, movecount)
 				object:remove()
 			end
 		end
-	elseif minetest.get_node(pipepos).name=="buildtest:pump" then
-		local topos  = buildtest.pumps.findpipe(pipepos)
-		buildtest.makeEnt(topos, {name="default:water_source"}, speed, pipepos)
-		local pumppipepos = {x=pipepos.x, y=pipepos.y-1, z=pipepos.z}
-		if minetest.get_node(pumppipepos).name=="air" then
-			minetest.set_node(pumppipepos, {name="buildtest:pump_pipe_act"})
-		end
+	elseif buildtest.pumps.pumpible[minetest.get_node(pipepos).name]~=nil then
+		buildtest.pumps.pumpible[minetest.get_node(pipepos).name].power(pipepos, speed)
 	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_stripe_") then
 		local itemName = minetest.get_node(chestpos).name
 		if itemName~="air" and itemName~="ignore" then
