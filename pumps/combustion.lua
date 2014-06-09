@@ -172,3 +172,8 @@ buildtest.pumps.register_pump("buildtest:engine_combustion", "default_steel_bloc
 	explodes = true,
 }
 )
+
+buildtest.pumps.crafts.combustion = {
+	mat = "default:steel_ingot",
+	gear = "buildtest:gear_steel",
+}

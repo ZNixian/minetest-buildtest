@@ -174,3 +174,8 @@ buildtest.pumps.register_pump("buildtest:engine_stirling", "default_cobble.png",
 	explodes = true,
 }
 )
+
+buildtest.pumps.crafts.stirling = {
+	mat = "group:stone",
+	gear = "buildtest:gear_stone",
+}

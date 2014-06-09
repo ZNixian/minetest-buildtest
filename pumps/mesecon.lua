@@ -12,3 +12,8 @@ buildtest.pumps.register_pump("buildtest:engine_mesecon", "default_wood.png", {
 	end,
 }
 )
+
+buildtest.pumps.crafts.mesecon = {
+	mat = "group:wood",
+	gear = "buildtest:gear_wood",
+}

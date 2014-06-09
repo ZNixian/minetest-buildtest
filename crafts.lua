@@ -6,3 +6,55 @@ for name, val in pairs(buildtest.pipes.types) do
 		}
 	})
 end
+
+for name, val in pairs({
+	wood = {
+		mat = "default:stick",
+		prev = "",
+	},
+	stone = {
+		mat = "group:stone",
+		prev = "buildtest:gear_wood",
+	},
+	steel = {
+		mat = "default:steel_ingot",
+		prev = "buildtest:gear_stone",
+	},
+	gold = {
+		mat = "default:gold_ingot",
+		prev = "buildtest:gear_steel",
+	},
+	diamond = {
+		mat = "default:diamond",
+		prev = "buildtest:gear_gold",
+	},
+}) do
+	minetest.register_craftitem("buildtest:gear_"..name, {
+		description = name.." gear",
+		inventory_image = "buildtest_gear_"..name..".png",
+	})
+	
+	minetest.register_craft({
+		output = "buildtest:gear_"..name,
+		recipe = {
+			{"",			val.mat,						""		},
+			{val.mat,		val.prev,						val.mat	},
+			{"",			val.mat,						""		},
+		}
+	})
+end
+
+
+
+
+for name, val in pairs(buildtest.pumps.crafts) do
+	local piston = "mesecons_pistons:piston_normal_off"
+	minetest.register_craft({
+		output = "buildtest:engine_"..name.."_blue",
+		recipe = {
+			{	val.mat,		val.mat,						val.mat		},
+			{	"",				"default:glass",					""		},
+			{	val.gear,		piston,							val.gear	},
+		}
+	})
+end

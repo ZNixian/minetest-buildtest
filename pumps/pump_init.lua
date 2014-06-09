@@ -1,5 +1,6 @@
 buildtest.pumps = {
 	types = {},
+	crafts = {},
 	colours = {
 		[1] = "blue",
 		[2] = "green",
