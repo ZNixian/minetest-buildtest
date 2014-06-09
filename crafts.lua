@@ -68,3 +68,12 @@ minetest.register_craft({
 		{	"buildtest:gear_diamond",	"default:pick_diamond",				"buildtest:gear_diamond"	},
 	}
 })
+
+
+minetest.register_craft({
+	output = "buildtest:landmark",
+	recipe = {
+		{"dye:blue"},
+		{"mesecons_torch:mesecon_torch_on"},
+	}
+})
