@@ -254,6 +254,7 @@ end
 
 buildtest.pipes.defaultVPipes = {
 	"buildtest:pump",
+	"buildtest:quarry",
 }
 
 buildtest.pipes.defaultPipes = {

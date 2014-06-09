@@ -53,8 +53,18 @@ for name, val in pairs(buildtest.pumps.crafts) do
 		output = "buildtest:engine_"..name.."_blue",
 		recipe = {
 			{	val.mat,		val.mat,						val.mat		},
-			{	"",				"default:glass",					""		},
+			{	"",				"default:glass",				""			},
 			{	val.gear,		piston,							val.gear	},
 		}
 	})
 end
+
+
+minetest.register_craft({
+	output = "buildtest:quarry",
+	recipe = {
+		{	"buildtest:gear_steel",		"mesecons:wire_00000000_off",		"buildtest:gear_steel"		},
+		{	"buildtest:gear_gold",		"buildtest:gear_steel",				"buildtest:gear_gold"		},
+		{	"buildtest:gear_diamond",	"default:pick_diamond",				"buildtest:gear_diamond"	},
+	}
+})
