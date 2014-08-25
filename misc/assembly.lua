@@ -28,6 +28,9 @@ buildtest.assembly = {
 			energy = 15,
 		},
 	},
+	register_craft = function(def)
+		buildtest.assembly.recipies[#buildtest.assembly.recipies+1]=def
+	end,
 	remove_items = function(inv, id)
 		if id==0 then return end
 		local rec = buildtest.assembly.recipies[buildtest.assembly.lookupId(inv, id)]
@@ -71,6 +74,17 @@ buildtest.assembly = {
 		end
 		return recipies
 	end,
+	get_ids = function(inv)
+		local ids = {}
+		for i=1, #buildtest.assembly.recipies do
+			ids[i]=0
+			if buildtest.assembly.can_make(inv, i) then
+				local rec = buildtest.assembly.recipies[i]
+				ids[#ids + 1] = {id=i, rec=rec, output = rec.output}
+			end
+		end
+		return ids
+	end,
 	check_config = function(meta)
 		if buildtest.assembly.can_make_rel(meta:get_inventory(), meta:get_int("selected"))==false then
 			meta:set_int("selected", 0)
@@ -84,7 +98,7 @@ buildtest.assembly = {
 		
 		local selId = meta:get_int("selected")
 		if selId~=0 then
-			local sel = buildtest.assembly.get_recipies(inv)[selId]
+			local sel = buildtest.assembly.recipies[selId]--buildtest.assembly.get_recipies(inv)[selId]
 			if sel~=nil and sel.rec~=nil and sel.rec.energy~=nil and sel.output~=nil then
 				local h = 4.0 * meta:get_int("power") / sel.rec.energy
 				formspec = formspec .. "box[4,"..(4-h)..";0.25,"..h..";#FF0000FF]" .. "box[4,0;0.25,"..(4-h)..";#000000FF]" .. "label[4,4;"..(h*100/4).."%]"
@@ -116,7 +130,7 @@ buildtest.assembly = {
 		local inv = meta:get_inventory()
 		local selId = meta:get_int("selected")
 		if selId~=0 then
-			local sel = buildtest.assembly.get_recipies(inv)[selId]
+			local sel = buildtest.assembly.recipies[selId]
 			if sel~=nil and sel.rec~=nil and sel.rec.energy~=nil and sel.output~=nil then
 				if meta:get_int("power") > sel.rec.energy then
 					local count = math.floor(meta:get_int("power") / sel.rec.energy)

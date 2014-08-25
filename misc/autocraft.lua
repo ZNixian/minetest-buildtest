@@ -43,7 +43,7 @@ buildtest.autocraft = {
 
 
 minetest.register_node("buildtest:autocraft", {
-	--tiles = {"buildtest_pump_mesecon.png"},
+	tiles = {"buildtest_autocraft.png"},
 	description = "Buildtest Automatic Crafting Table",
 	groups = {choppy=1, oddly_breakable_by_hand=3},
 	paramtype = "light",

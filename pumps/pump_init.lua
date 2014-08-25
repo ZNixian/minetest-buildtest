@@ -121,7 +121,7 @@ buildtest.pumps.send_power = function(pipepos, speed, movecount)
 			end
 		end
 	elseif buildtest.pumps.pumpible[minetest.get_node(pipepos).name]~=nil then
-		buildtest.pumps.pumpible[minetest.get_node(pipepos).name].power(pipepos, speed)
+		buildtest.pumps.pumpible[minetest.get_node(pipepos).name].power(pipepos, movecount, speed)
 	elseif strs:starts(minetest.get_node(pipepos).name, "buildtest:pipe_stripe_") then
 		local itemName = minetest.get_node(chestpos).name
 		if itemName~="air" and itemName~="ignore" then

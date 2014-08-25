@@ -46,6 +46,7 @@ dofile(minetest.get_modpath("buildtest").."/support/entity.lua")
 dofile(minetest.get_modpath("buildtest").."/support/liquid.lua")
 dofile(minetest.get_modpath("buildtest").."/misc/init.lua")
 dofile(minetest.get_modpath("buildtest").."/bt factory/init.lua")
+dofile(minetest.get_modpath("buildtest").."/bt silicon/init.lua")
 
 dofile(minetest.get_modpath("buildtest").."/crafts.lua")
 
