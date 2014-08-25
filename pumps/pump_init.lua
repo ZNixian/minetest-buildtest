@@ -423,5 +423,5 @@ end
 dofile(minetest.get_modpath("buildtest").."/pumps/graphics/init.lua")
 dofile(minetest.get_modpath("buildtest").."/pumps/mesecon.lua")
 dofile(minetest.get_modpath("buildtest").."/pumps/sterling.lua")
-dofile(minetest.get_modpath("buildtest").."/pumps/pump.lua")
+--dofile(minetest.get_modpath("buildtest").."/pumps/pump.lua")
 dofile(minetest.get_modpath("buildtest").."/pumps/combustion.lua")
