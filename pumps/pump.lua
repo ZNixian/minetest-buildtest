@@ -58,12 +58,12 @@ minetest.register_node("buildtest:pump_pipe", {
 	groups = {oddly_breakable_by_hand=3},
 })
 
-minetest.register_abm({
-	nodenames = {"default:lava_source"},
-	neighbors = {"buildtest:pump_pipe_act"},
-	interval = 10,
-	chance = 1,
-	action = function(pos, node)
-		minetest.set_node(pos, {name="buildtest:pump_pipe_act"})
-	end,
-})
+-- minetest.register_abm({
+--	nodenames = {"default:lava_source"},
+--	neighbors = {"buildtest:pump_pipe_act"},
+--	interval = 10,
+--	chance = 1,
+--	action = function(pos, node)
+--		minetest.set_node(pos, {name="buildtest:pump_pipe_act"})
+--	end,
+-- })
